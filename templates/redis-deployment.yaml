@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    deployment: redis
+spec:
+  {{- if not .Values.redis.autoscaling.enabled }}
+  replicas: {{ .Values.redis.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      pod: redis
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        pod: redis
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: redis
+          image: "{{ .Values.redis.image }}:{{ .Values.redis.imageTag | default 'latest' }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.redis.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.redis.requestCPU }}
+              memory: {{ .Values.redis.requestMem }}
+            limits:
+              cpu: {{ .Values.redis.limitCPU }}
+              memory: {{ .Values.redis.limitMem }}
+      {{- with .Values.global.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
