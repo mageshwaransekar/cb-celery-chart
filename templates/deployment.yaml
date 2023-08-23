@@ -33,10 +33,15 @@ spec:
           limits:
             memory: {{ .Values.global.limitMem }}
             cpu: {{ .Values.global.limitCPU }}
-        #livenessProbe:
-        #  httpGet:
-        #    path: /
-        #    port: http
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - "[[ $(curl localhost:8000/random -m 10 -s |  grep -q 'TimeoutError' && echo 1 || echo 0) == '0' ]]"
+          initialDelaySeconds: 20
+          periodSeconds: 15
+          failureThreshold: 2
         readinessProbe:
           exec:
             command:

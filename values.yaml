@@ -1,6 +1,10 @@
 image:
   pullPolicy: Always
 
+namespace:
+  name: backend
+  create: False
+
 global:
   requestCPU: 200m
   requestMem: 200Mi
@@ -21,7 +25,7 @@ djangoCelery:
   image: <django-docker-image-here>
   replicaCount: 3
   env:
-    celeryBrokerURL: redis://redis-1.redis-svc.backend.svc.cluster.local:6379
+    celeryBrokerURL: redis://redis-0.redis-svc.backend.svc.cluster.local:6379
     celeryResultBackend: redis://redis-1.redis-svc.backend.svc.cluster.local:6379
 
 django:
