@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-celery
+  labels:
+    app: django-celery
+  namespace: {{ .Values.namespace.name }}
+spec:
+  replicas: {{ .Values.djangoCelery.replicaCount }}
+  selector:
+    matchLabels:
+      app: django-celery
+  template:
+    metadata:
+      labels:
+        app: django-celery
+    spec:
+      containers:
+      - name: django-celery
+        image: {{ .Values.djangoCelery.image }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: CELERY_BROKER_URL
+          value: {{ .Values.djangoCelery.env.celeryBrokerURL }}
+        - name: CELERY_RESULT_BACKEND
+          value: {{ .Values.djangoCelery.env.celeryResultBackend }}
+        ports:
+        - containerPort: {{ .Values.django.service.port }}
+        resources:
+          requests:
+            memory: {{ .Values.global.requestMem }}
+            cpu: {{ .Values.global.requestCPU }}
+          limits:
+            memory: {{ .Values.global.limitMem }}
+            cpu: {{ .Values.global.limitCPU }}
+        #livenessProbe:
+        #  httpGet:
+        #    path: /
+        #    port: http
+        readinessProbe:
+          exec:
+            command:
+              - python 
+              - /opt/celery/app/celeryworker/celery_liveness.py

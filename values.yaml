@@ -1,21 +1,5 @@
 image:
   pullPolicy: Always
-#imagePullSecrets: []
-
-
-namespace:
-  name: backend
-  create: True
-
-redis:
-  image: redis
-  replicaCount: 1
-  containerPort: 6379
-  serviceName: redis-svc
-  requestCPU: 100m
-  requestMem: 100Mi
-  limitCPU: 200m
-  limitMem: 200Mi
 
 global:
   requestCPU: 200m
@@ -23,8 +7,28 @@ global:
   limitCPU: 300m
   limitMem: 500Mi
 
+redis:
+  image: redis:latest
+  replicaCount: 2
+  port: 6379
+  serviceName: redis-svc
+  requestCPU: 100m
+  requestMem: 100Mi
+  limitCPU: 200m
+  limitMem: 200Mi
 
 djangoCelery:
-  image: aws-ecr-url
-  replicaCount: 4
-  
+  image: <django-docker-image-here>
+  replicaCount: 3
+  env:
+    celeryBrokerURL: redis://redis-1.redis-svc.backend.svc.cluster.local:6379
+    celeryResultBackend: redis://redis-1.redis-svc.backend.svc.cluster.local:6379
+
+django:
+  ingress:
+    host: <elb-dns-name-here>
+    port: 80
+  service:
+    name: django-svc
+    port: 80
+  targetPort: 8000

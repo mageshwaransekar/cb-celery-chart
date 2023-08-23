@@ -1,0 +1,25 @@
+controller:
+  ingressClass: nginx
+  publishService:
+    enabled: true
+  service:
+    clusterIP: ""
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+      service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  defaultBackend:
+    clusterIP: ""
+
+  # resources used by the nginx controller
+  resources:
+    limits:
+      cpu: 200m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 300Mi
+
+  config:
+    # Hides the http response headers showing the explicit version of nginx
+    server-tokens: "false"
