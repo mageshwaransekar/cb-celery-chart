@@ -48,3 +48,8 @@ Now we can deploy the chart:
 ```
 helm upgrade --install -f values.yaml backend .
 ```
+
+## Liveness Probe
+We have enabled liveness probe for django-celery in order to check if the process has slowed down or become non-responsive. In that case, the pod will be restarted and the process will be back to normal.
+
+To simulate this, we can access the URL of <app-url>/slow and open multiple tab or curl. And monitor whether the pods are restarted. In our case <app-URL> is the DNS name of the ELB.
