@@ -46,4 +46,4 @@ spec:
           exec:
             command:
               - python 
-              - /opt/celery/app/celeryworker/celery_liveness.py
+              - /opt/celery/app/celeryworker/celery_readiness.py
